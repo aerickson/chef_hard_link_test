@@ -51,9 +51,7 @@ cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
 end
 
 
-### display ls -li output
-# - in this case the inodes are different
-#   - chef does not detect the file is hard-linked and copy the source to all hard-links.
+### print debug info
 
 results = "/tmp/output.txt"
 file results do
@@ -71,9 +69,22 @@ ruby_block "Results" do
   only_if { ::File.exists?(results) }
   block do
     print "\n"
+    print <<-'HEREDOC'
+    _            _                 _               _
+   | |_ ___  ___| |_    ___  _   _| |_ _ __  _   _| |_
+   | __/ _ \/ __| __|  / _ \| | | | __| '_ \| | | | __|
+   | ||  __/\__ \ |_  | (_) | |_| | |_| |_) | |_| | |_
+    \__\___||___/\__|  \___/ \__,_|\__| .__/ \__,_|\__|
+                                      |_|
+    HEREDOC
+    print "\n"
     print File.read(results)
   end
 end
+
+# NOTES:
+# - in this case the inodes are different
+#   - chef does not detect the file is hard-linked and copy the source to all hard-links.
 
 
 ### cleanup
