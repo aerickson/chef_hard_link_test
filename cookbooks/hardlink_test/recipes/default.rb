@@ -28,7 +28,10 @@ end
 
 # will it explode?
 cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
-  source 'foo.txt'
+  # use different content to simulate 'real world' where time
+  # has passed and source has now changed.
+  #
+  source 'foo_v2.txt'
   mode '0755'
   action :create
 end
