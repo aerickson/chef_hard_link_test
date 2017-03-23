@@ -1,11 +1,12 @@
-# init
+### init
 
 directory '/tmp/chef_hard_link_test' do
   mode '0755'
   action :create
 end
 
-# test
+
+### test
 
 cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
   source 'foo.txt'
@@ -25,14 +26,15 @@ link '/tmp/chef_hard_link_test/foo2.txt' do
   link_type :hard
 end
 
-# should explode? does in ansible
+# will it explode?
 cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
   source 'foo.txt'
   mode '0755'
   action :create
 end
 
-# cleanup
+
+### cleanup
 
 file '/tmp/chef_hard_link_test/foo2.txt' do
   action :delete
