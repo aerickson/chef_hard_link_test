@@ -1,3 +1,12 @@
+# TODO: use variables
+#
+# fqdn = // logic to get fqdn
+#
+# file '/tmp/file' do
+#   content "fqdn=#{fqdn}"
+# end
+
+
 ### init
 
 directory '/tmp/chef_hard_link_test' do
@@ -6,7 +15,7 @@ directory '/tmp/chef_hard_link_test' do
 end
 
 
-### test
+### do things
 
 cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
   source 'foo.txt'
@@ -25,6 +34,11 @@ link '/tmp/chef_hard_link_test/foo2.txt' do
   to '/tmp/chef_hard_link_test/foo.txt'
   link_type :hard
 end
+# an extra hardlink for fun
+link '/tmp/chef_hard_link_test/foo3.txt' do
+  to '/tmp/chef_hard_link_test/foo.txt'
+  link_type :hard
+end
 
 # will it explode?
 cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
@@ -37,17 +51,33 @@ cookbook_file '/tmp/chef_hard_link_test/foo.txt' do
 end
 
 
+### display ls -li output
+# - in this case the inodes are different
+#   - chef does not detect the file is hard-linked and copy the source to all hard-links.
+
+results = "/tmp/output.txt"
+file results do
+  action :delete
+end
+
+cmd = "ls -li /tmp/chef_hard_link_test/*"
+bash cmd do
+  code <<-EOH
+  #{cmd} &> #{results}
+  EOH
+end
+
+ruby_block "Results" do
+  only_if { ::File.exists?(results) }
+  block do
+    print "\n"
+    print File.read(results)
+  end
+end
+
+
 ### cleanup
 
-file '/tmp/chef_hard_link_test/foo2.txt' do
-  action :delete
-end
-
-file '/tmp/chef_hard_link_test/foo.txt' do
-  action :delete
-end
-
-directory '/tmp/chef_hard_link_test' do
-  recursive true
-  action :delete
+execute 'cleanup' do
+  command 'rm -rf /tmp/chef_hard_link_test'
 end
