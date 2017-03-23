@@ -1,4 +1,4 @@
 {
-	"run_list": [ "recipe[java]", "recipe[tomcat7]" ]
-	
+	"run_list": [ "recipe[hardlink_test]" ]
+
 }
