@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/circulate
+    docker:
+      - image: ruby
+    steps:
+      - checkout
+      - run: echo "hello world"
+      - run: bundle install
+      - run: ./run.sh
+
